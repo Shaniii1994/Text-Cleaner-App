@@ -1,6 +1,5 @@
-# Core Packages
 import streamlit as st
-import wordcloud as wordcloud
+import wordcloud
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -14,11 +13,22 @@ from spacy import displacy
 
 matplotlib.use("Agg")
 
+# Function to check and download the model if not available
+def load_spacy_model(model_name="en_core_web_sm"):
+    try:
+        nlp = spacy.load(model_name)
+        return nlp
+    except OSError:
+        import subprocess
+        print(f"Model {model_name} not found. Downloading...")
+        subprocess.run(["python", "-m", "spacy", "download", model_name], check=True)
+        nlp = spacy.load(model_name)
+        return nlp
+
 # Load NLP model
-nlp = spacy.load("en_core_web_sm")
+nlp = load_spacy_model()
 
 timestr = time.strftime("%Y%m%d-%H%M%S")
-
 
 # Function to get most common tokens
 def get_most_common_tokens(docx, num=10):
@@ -26,15 +36,13 @@ def get_most_common_tokens(docx, num=10):
     most_common_tokens = word_frequency.most_common(num)
     return dict(most_common_tokens)
 
-
 # Function to plot WordCloud
 def plot_wordcloud(docx):
-    mywordcloud = wordcloud(width=800, height=400, background_color="white").generate(docx)
+    mywordcloud = wordcloud.WordCloud(width=800, height=400, background_color="white").generate(docx)
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.imshow(mywordcloud, interpolation="bilinear")
     ax.axis("off")
     st.pyplot(fig)
-
 
 # Text Analyzer
 def text_analyzer(my_text):
@@ -46,24 +54,20 @@ def text_analyzer(my_text):
     df = pd.DataFrame(all_data, columns=["Text", "Shape", "POS", "Tag", "Lemma", "Is Alpha", "Is Stopword"])
     return df
 
-
 # Named Entity Recognition (NER)
 def get_entities(my_text):
     docx = nlp(my_text)
     entities = [(ent.text, ent.label_) for ent in docx.ents]
     return entities
 
-
 # Render Named Entities
 HTML_WRAPPER = """<div style="overflow-x: auto; border: 1px solid #e6e9ef; border-radius: 0.25rem;">{}</div>"""
-
 
 def render_entities(raw_text):
     docx = nlp(raw_text)
     html = displacy.render(docx, style="ent")
     html = html.replace("\n\n", "\n")
     return HTML_WRAPPER.format(html)
-
 
 # Function to download result as CSV
 def make_downloadable(data):
@@ -74,7 +78,6 @@ def make_downloadable(data):
     href = f'<a href="data:file/csv;base64,{b64}" download="{new_filename}">Click to download!</a>'
     st.markdown(href, unsafe_allow_html=True)
 
-
 # Function to download cleaned text
 def text_downloader(raw_text):
     b64 = base64.b64encode(raw_text.encode()).decode()
@@ -82,7 +85,6 @@ def text_downloader(raw_text):
     st.markdown("### ⬇️ Download File ###")
     href = f'<a href="data:file/txt;base64,{b64}" download="{new_filename}">Click here!</a>'
     st.markdown(href, unsafe_allow_html=True)
-
 
 # Streamlit App
 def main():
@@ -156,10 +158,9 @@ def main():
     else:
         st.subheader("About")
         st.write("📜 A simple yet powerful NLP-based tool for cleaning and analyzing text, built with Streamlit. 🚀"
-                "🛠️ Remove stopwords, punctuation, emails, URLs & more—effortlessly! 💡"
-                "📊 Generate word clouds, POS tags, and entity visualizations with ease! 🎨"
-                "💾 Upload your text & let the magic happen! ✨")
-
+                 "🛠️ Remove stopwords, punctuation, emails, URLs & more—effortlessly! 💡"
+                 "📊 Generate word clouds, POS tags, and entity visualizations with ease! 🎨"
+                 "💾 Upload your text & let the magic happen! ✨")
 
 if __name__ == "__main__":
     main()
