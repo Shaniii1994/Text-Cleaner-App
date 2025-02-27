@@ -1,6 +1,6 @@
 # Core Packages
 import streamlit as st
-import wordcloud as WordCloud
+import wordcloud as wordcloud
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -29,7 +29,7 @@ def get_most_common_tokens(docx, num=10):
 
 # Function to plot WordCloud
 def plot_wordcloud(docx):
-    mywordcloud = WordCloud(width=800, height=400, background_color="white").generate(docx)
+    mywordcloud = wordcloud(width=800, height=400, background_color="white").generate(docx)
     fig, ax = plt.subplots(figsize=(10, 5))
     ax.imshow(mywordcloud, interpolation="bilinear")
     ax.axis("off")
