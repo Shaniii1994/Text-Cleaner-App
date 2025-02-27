@@ -1,6 +1,6 @@
 # Core Packages
 import streamlit as st
-from wordcloud import WordCloud 
+import wordcloud as WordCloud
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -70,7 +70,7 @@ def make_downloadable(data):
     csvfile = data.to_csv(index=False)
     b64 = base64.b64encode(csvfile.encode()).decode()
     new_filename = f"nlp_result_{timestr}.csv"
-    st.markdown("### **Download CSV File**")
+    st.markdown("### **⬇️ Download CSV File**")
     href = f'<a href="data:file/csv;base64,{b64}" download="{new_filename}">Click to download!</a>'
     st.markdown(href, unsafe_allow_html=True)
 
