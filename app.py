@@ -1,6 +1,6 @@
 # Core Packages
 import streamlit as st
-from wordcloud import WordCloud
+from wordcloud import WordCloud 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
